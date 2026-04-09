@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evidence Intelligence Suite — Command Center</title>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #0f0f1a;
+  color: #e0e0e8;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: #7eb8ff; text-decoration: none; transition: color 0.2s; }
+a:hover { color: #aad4ff; }
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0f0f1a; }
+::-webkit-scrollbar-thumb { background: #2a2a45; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3a3a5a; }
+
+/* ========== PARTICLE CANVAS ========== */
+#ecc-particles {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+
+/* ========== NAV ========== */
+#ecc-nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(15, 15, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(126, 184, 255, 0.1);
+  padding: 0 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+  transition: background 0.3s;
+}
+#ecc-nav-logo {
+  font-size: 1.1rem; font-weight: 700;
+  background: linear-gradient(135deg, #7eb8ff, #c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+#ecc-nav-links { display: flex; gap: 1.5rem; list-style: none; }
+#ecc-nav-links a {
+  color: #a0a0b8; font-size: 0.85rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+#ecc-nav-links a:hover { color: #e0e0e8; }
+
+/* ========== SECTIONS ========== */
+.ecc-section {
+  position: relative; z-index: 1;
+  max-width: 1200px; margin: 0 auto;
+  padding: 5rem 2rem;
+}
+.ecc-section-title {
+  font-size: 2rem; font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #7eb8ff, #c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.ecc-section-subtitle {
+  color: #8888a8; font-size: 1rem; margin-bottom: 3rem;
+}
+
+/* ========== HERO ========== */
+#ecc-hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  position: relative; z-index: 1;
+  padding: 6rem 2rem 4rem;
+}
+#ecc-hero-badge {
+  display: inline-block;
+  padding: 0.4rem 1.2rem;
+  border: 1px solid rgba(126, 184, 255, 0.3);
+  border-radius: 999px;
+  font-size: 0.8rem; color: #7eb8ff;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 2rem;
+  animation: ecc-pulse-border 3s ease-in-out infinite;
+}
+@keyframes ecc-pulse-border {
+  0%, 100% { border-color: rgba(126, 184, 255, 0.3); }
+  50% { border-color: rgba(126, 184, 255, 0.7); }
+}
+#ecc-hero h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, #7eb8ff 50%, #c084fc 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+#ecc-hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: #8888a8;
+  max-width: 700px;
+  margin-bottom: 3rem;
+}
+#ecc-hero-cycling {
+  font-size: 1.1rem;
+  color: #c084fc;
+  min-height: 2rem;
+  font-weight: 600;
+  opacity: 1;
+  transition: opacity 0.5s;
+}
+#ecc-hero-cycling.ecc-fade { opacity: 0; }
+
+#ecc-hero-scroll {
+  position: absolute; bottom: 2rem;
+  animation: ecc-bounce 2s ease-in-out infinite;
+  color: #4a4a6a;
+  font-size: 1.5rem;
+}
+@keyframes ecc-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* ========== BIG NUMBERS ========== */
+#ecc-numbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  padding: 4rem 2rem;
+  max-width: 1200px; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.ecc-number-card {
+  text-align: center;
+  padding: 2rem 1rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(126, 184, 255, 0.08);
+  transition: border-color 0.3s, transform 0.3s;
+}
+.ecc-number-card:hover {
+  border-color: rgba(126, 184, 255, 0.25);
+  transform: translateY(-4px);
+}
+.ecc-number-value {
+  font-size: 3rem; font-weight: 800;
+  background: linear-gradient(135deg, #7eb8ff, #c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+.ecc-number-label {
+  color: #8888a8; font-size: 0.9rem; margin-top: 0.5rem;
+}
+
+/* ========== PROJECT GRID ========== */
+#ecc-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+.ecc-project-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(126, 184, 255, 0.08);
+  border-radius: 16px;
+  padding: 2rem;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.ecc-project-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(126, 184, 255, 0.3);
+  box-shadow: 0 12px 40px rgba(126, 184, 255, 0.08);
+}
+.ecc-project-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.ecc-project-card:hover::before { opacity: 1; }
+.ecc-project-card[data-tier="1"]::before { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+.ecc-project-card[data-tier="2"]::before { background: linear-gradient(90deg, #7eb8ff, #c084fc); }
+.ecc-project-card[data-tier="3"]::before { background: linear-gradient(90deg, #34d399, #06b6d4); }
+
+.ecc-card-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+.ecc-card-icon {
+  width: 48px; height: 48px; flex-shrink: 0;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+}
+.ecc-card-icon[data-icon="audit"] { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.ecc-card-icon[data-icon="oracle"] { background: rgba(192, 132, 252, 0.15); color: #c084fc; }
+.ecc-card-icon[data-icon="contradict"] { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.ecc-card-icon[data-icon="action"] { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.ecc-card-icon[data-icon="atlas"] { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+.ecc-card-icon[data-icon="score"] { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.ecc-card-icon[data-icon="ipd"] { background: rgba(126, 184, 255, 0.15); color: #7eb8ff; }
+.ecc-card-icon[data-icon="halflife"] { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+.ecc-card-icon[data-icon="tribunal"] { background: rgba(244, 114, 182, 0.15); color: #f472b6; }
+
+.ecc-card-title-area { flex: 1; }
+.ecc-card-name {
+  font-size: 1.2rem; font-weight: 700; color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+.ecc-card-tagline { font-size: 0.85rem; color: #8888a8; }
+
+.ecc-card-stat {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.75rem; font-weight: 600;
+  margin-bottom: 1rem;
+}
+.ecc-card-stat[data-color="amber"] { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.ecc-card-stat[data-color="purple"] { background: rgba(192, 132, 252, 0.15); color: #c084fc; }
+.ecc-card-stat[data-color="red"] { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.ecc-card-stat[data-color="green"] { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.ecc-card-stat[data-color="cyan"] { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+.ecc-card-stat[data-color="yellow"] { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.ecc-card-stat[data-color="blue"] { background: rgba(126, 184, 255, 0.15); color: #7eb8ff; }
+.ecc-card-stat[data-color="pink"] { background: rgba(244, 114, 182, 0.15); color: #f472b6; }
+
+.ecc-card-finding {
+  font-size: 0.9rem; color: #b0b0c8;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.ecc-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.ecc-card-status {
+  display: flex; align-items: center; gap: 0.4rem;
+  font-size: 0.8rem; font-weight: 500;
+}
+.ecc-status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.ecc-status-dot[data-status="complete"] { background: #34d399; box-shadow: 0 0 6px rgba(52, 211, 153, 0.5); }
+.ecc-status-dot[data-status="active"] { background: #7eb8ff; box-shadow: 0 0 6px rgba(126, 184, 255, 0.5); animation: ecc-dot-pulse 2s ease-in-out infinite; }
+.ecc-status-dot[data-status="building"] { background: #fbbf24; box-shadow: 0 0 6px rgba(251, 191, 36, 0.5); animation: ecc-dot-pulse 1.5s ease-in-out infinite; }
+@keyframes ecc-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.ecc-card-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem; font-weight: 600;
+  background: rgba(126, 184, 255, 0.1);
+  color: #7eb8ff;
+  border: 1px solid rgba(126, 184, 255, 0.2);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  text-decoration: none;
+}
+.ecc-card-btn:hover {
+  background: rgba(126, 184, 255, 0.2);
+  border-color: rgba(126, 184, 255, 0.4);
+  transform: translateX(2px);
+  color: #aad4ff;
+}
+.ecc-card-btn[data-disabled="true"] {
+  opacity: 0.4; pointer-events: none;
+}
+
+/* ========== TIER LABELS ========== */
+.ecc-tier-label {
+  font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin-bottom: 1.5rem;
+  padding-left: 0.5rem;
+}
+.ecc-tier-label[data-tier="1"] { color: #f59e0b; border-left: 3px solid #f59e0b; }
+.ecc-tier-label[data-tier="2"] { color: #c084fc; border-left: 3px solid #c084fc; }
+.ecc-tier-label[data-tier="3"] { color: #34d399; border-left: 3px solid #34d399; }
+
+/* ========== STORY ========== */
+#ecc-story {
+  position: relative; z-index: 1;
+}
+.ecc-story-timeline {
+  position: relative;
+  padding-left: 3rem;
+}
+.ecc-story-timeline::before {
+  content: '';
+  position: absolute; left: 11px; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, #7eb8ff 0%, #c084fc 50%, #34d399 100%);
+  opacity: 0.3;
+}
+.ecc-story-step {
+  position: relative;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1rem;
+}
+.ecc-story-step::before {
+  content: '';
+  position: absolute; left: -3rem; top: 0.4rem;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid #7eb8ff;
+  background: #0f0f1a;
+}
+.ecc-story-step:nth-child(2)::before { border-color: #ef4444; }
+.ecc-story-step:nth-child(3)::before { border-color: #34d399; }
+.ecc-story-step:nth-child(4)::before { border-color: #c084fc; }
+.ecc-story-step:nth-child(5)::before { border-color: #fbbf24; }
+.ecc-story-step h3 {
+  font-size: 1.1rem; font-weight: 700; color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+.ecc-story-step p {
+  font-size: 0.95rem; color: #8888a8; line-height: 1.6;
+}
+
+/* ========== LIVE METRICS ========== */
+#ecc-metrics-section { position: relative; z-index: 1; }
+.ecc-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+.ecc-metric-panel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(126, 184, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: border-color 0.3s;
+}
+.ecc-metric-panel:hover { border-color: rgba(126, 184, 255, 0.2); }
+.ecc-metric-panel-title {
+  font-size: 0.75rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+}
+.ecc-metric-panel-title[data-c="amber"] { color: #fbbf24; }
+.ecc-metric-panel-title[data-c="red"] { color: #ef4444; }
+.ecc-metric-panel-title[data-c="green"] { color: #34d399; }
+.ecc-metric-panel-title[data-c="purple"] { color: #c084fc; }
+
+/* Grade distribution bars */
+.ecc-grade-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-bottom: 0.5rem; font-size: 0.85rem;
+}
+.ecc-grade-label {
+  width: 28px; font-weight: 700; text-align: right; flex-shrink: 0;
+}
+.ecc-grade-bar-bg {
+  flex: 1; height: 22px; background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px; overflow: hidden; position: relative;
+}
+.ecc-grade-bar {
+  height: 100%; border-radius: 4px;
+  transition: width 1.5s ease-out;
+}
+.ecc-grade-count {
+  width: 45px; text-align: right; color: #8888a8; font-size: 0.8rem; flex-shrink: 0;
+}
+
+/* Contradiction donut via conic-gradient */
+.ecc-donut-wrap { display: flex; align-items: center; gap: 1.5rem; }
+.ecc-donut {
+  width: 120px; height: 120px; border-radius: 50%; flex-shrink: 0;
+  position: relative;
+}
+.ecc-donut-hole {
+  position: absolute; inset: 20px; border-radius: 50%;
+  background: #0f0f1a;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+}
+.ecc-donut-pct { font-size: 1.5rem; font-weight: 800; color: #ffffff; }
+.ecc-donut-label { font-size: 0.65rem; color: #8888a8; margin-top: 2px; }
+.ecc-donut-legend { list-style: none; font-size: 0.82rem; }
+.ecc-donut-legend li { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; color: #b0b0c8; }
+.ecc-donut-legend-dot {
+  width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+}
+
+/* Criteria failure horizontal bars */
+.ecc-criteria-row {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-bottom: 0.6rem; font-size: 0.8rem;
+}
+.ecc-criteria-name {
+  width: 110px; color: #b0b0c8; flex-shrink: 0; text-align: right;
+}
+.ecc-criteria-bar-bg {
+  flex: 1; height: 16px; background: rgba(255, 255, 255, 0.04);
+  border-radius: 3px; overflow: hidden;
+}
+.ecc-criteria-bar {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, #34d399, #ef4444);
+  transition: width 1.5s ease-out;
+}
+.ecc-criteria-pct {
+  width: 42px; color: #8888a8; font-size: 0.8rem; flex-shrink: 0;
+}
+
+/* Oracle metrics */
+.ecc-oracle-stats { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.ecc-oracle-stat {
+  text-align: center; flex: 1; min-width: 80px;
+  padding: 0.8rem 0.5rem;
+  background: rgba(192, 132, 252, 0.06);
+  border-radius: 10px;
+}
+.ecc-oracle-val { font-size: 1.5rem; font-weight: 800; color: #c084fc; }
+.ecc-oracle-lbl { font-size: 0.7rem; color: #8888a8; margin-top: 4px; }
+.ecc-oracle-fold-row {
+  display: flex; align-items: center; gap: 0.4rem;
+  margin-bottom: 0.3rem; font-size: 0.78rem;
+}
+.ecc-oracle-fold-label { width: 50px; color: #8888a8; flex-shrink: 0; }
+.ecc-oracle-fold-bar-bg {
+  flex: 1; height: 14px; background: rgba(255, 255, 255, 0.04);
+  border-radius: 3px; overflow: hidden;
+}
+.ecc-oracle-fold-bar {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, #7eb8ff, #c084fc);
+  transition: width 1.5s ease-out;
+}
+.ecc-oracle-fold-val { width: 40px; color: #b0b0c8; font-size: 0.78rem; flex-shrink: 0; }
+
+/* ========== QUICK LAUNCH ========== */
+#ecc-launch-section { position: relative; z-index: 1; }
+.ecc-launch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+.ecc-launch-btn {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 1.5rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(126, 184, 255, 0.08);
+  border-radius: 14px;
+  text-decoration: none;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, background 0.3s;
+  cursor: pointer;
+}
+.ecc-launch-btn:hover {
+  transform: translateY(-4px);
+  border-color: rgba(126, 184, 255, 0.3);
+  box-shadow: 0 8px 30px rgba(126, 184, 255, 0.1);
+  background: rgba(126, 184, 255, 0.04);
+}
+.ecc-launch-btn:focus-visible {
+  outline: 2px solid #7eb8ff;
+  outline-offset: 2px;
+}
+.ecc-launch-icon {
+  font-size: 2rem; margin-bottom: 0.6rem;
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ecc-launch-name {
+  font-size: 0.9rem; font-weight: 700; color: #ffffff;
+  margin-bottom: 0.2rem; text-align: center;
+}
+.ecc-launch-desc {
+  font-size: 0.72rem; color: #8888a8; text-align: center;
+}
+
+/* ========== ARCHITECTURE ========== */
+#ecc-architecture { position: relative; z-index: 1; }
+#ecc-arch-svg {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* ========== PUBLICATIONS TABLE ========== */
+#ecc-publications { position: relative; z-index: 1; }
+#ecc-pub-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+#ecc-pub-table thead th {
+  text-align: left;
+  padding: 1rem;
+  color: #7eb8ff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid rgba(126, 184, 255, 0.15);
+}
+#ecc-pub-table tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #b0b0c8;
+}
+#ecc-pub-table tbody tr:hover { background: rgba(126, 184, 255, 0.03); }
+.ecc-pub-status {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.ecc-pub-status[data-s="writing"] { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.ecc-pub-status[data-s="submitted"] { background: rgba(126, 184, 255, 0.15); color: #7eb8ff; }
+.ecc-pub-status[data-s="planned"] { background: rgba(136, 136, 168, 0.15); color: #8888a8; }
+.ecc-pub-status[data-s="draft"] { background: rgba(192, 132, 252, 0.15); color: #c084fc; }
+
+/* ========== FOOTER ========== */
+#ecc-footer {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #8888a8;
+  font-size: 0.85rem;
+  position: relative; z-index: 1;
+  border-top: 1px solid rgba(126, 184, 255, 0.06);
+}
+#ecc-footer span {
+  background: linear-gradient(135deg, #7eb8ff, #c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== SKIP LINK ========== */
+.ecc-skip-link {
+  position: absolute; top: -100px; left: 1rem;
+  background: #7eb8ff; color: #0f0f1a;
+  padding: 0.5rem 1rem; border-radius: 0 0 8px 8px;
+  font-weight: 700; font-size: 0.9rem;
+  z-index: 200; transition: top 0.2s;
+}
+.ecc-skip-link:focus { top: 0; }
+
+/* ========== FOCUS STYLES ========== */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid #7eb8ff;
+  outline-offset: 2px;
+}
+
+/* ========== ANIMATIONS ========== */
+.ecc-fade-in {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.ecc-fade-in.ecc-visible {
+  opacity: 1; transform: translateY(0);
+}
+
+/* ========== RESPONSIVE ========== */
+/* ========== HAMBURGER ========== */
+#ecc-hamburger {
+  display: none;
+  background: none; border: none; cursor: pointer;
+  width: 36px; height: 36px; position: relative;
+  flex-shrink: 0;
+}
+#ecc-hamburger span {
+  display: block; position: absolute; left: 6px;
+  width: 24px; height: 2px; background: #e0e0e8;
+  border-radius: 2px; transition: transform 0.3s, opacity 0.3s;
+}
+#ecc-hamburger span:nth-child(1) { top: 10px; }
+#ecc-hamburger span:nth-child(2) { top: 17px; }
+#ecc-hamburger span:nth-child(3) { top: 24px; }
+#ecc-hamburger.ecc-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+#ecc-hamburger.ecc-open span:nth-child(2) { opacity: 0; }
+#ecc-hamburger.ecc-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 768px) {
+  #ecc-hamburger { display: block; }
+  #ecc-nav-links {
+    display: none; flex-direction: column; gap: 0;
+    position: absolute; top: 60px; left: 0; right: 0;
+    background: rgba(15, 15, 26, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(126, 184, 255, 0.1);
+    padding: 1rem 0;
+  }
+  #ecc-nav-links.ecc-open { display: flex; }
+  #ecc-nav-links a {
+    display: block; padding: 0.8rem 2rem;
+    font-size: 1rem;
+  }
+  #ecc-nav-links a:hover { background: rgba(126, 184, 255, 0.05); }
+  #ecc-projects-grid,
+  #ecc-projects-grid-t2,
+  #ecc-projects-grid-t3 { grid-template-columns: 1fr !important; }
+  #ecc-numbers { grid-template-columns: repeat(2, 1fr); }
+  .ecc-section { padding: 3rem 1rem; }
+  #ecc-hero { padding: 5rem 1rem 3rem; }
+  #ecc-pub-table { font-size: 0.8rem; }
+  #ecc-pub-table thead th, #ecc-pub-table tbody td { padding: 0.6rem 0.4rem; }
+}
+@media (max-width: 480px) {
+  #ecc-numbers { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .ecc-fade-in { opacity: 1; transform: none; transition: none; }
+  #ecc-hero-scroll, #ecc-hero-badge { animation: none; }
+  .ecc-status-dot { animation: none; }
+  .ecc-project-card, .ecc-number-card, .ecc-launch-btn { transition: none; }
+  .ecc-grade-bar, .ecc-criteria-bar, .ecc-oracle-fold-bar { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- SKIP LINK -->
+<a href="#ecc-projects-section" class="ecc-skip-link">Skip to content</a>
+
+<!-- NAV -->
+<nav id="ecc-nav" aria-label="Main navigation">
+  <div id="ecc-nav-logo">Evidence Intelligence</div>
+  <ul id="ecc-nav-links">
+    <li><a href="#ecc-hero">Home</a></li>
+    <li><a href="#ecc-numbers-section">Numbers</a></li>
+    <li><a href="#ecc-projects-section">Projects</a></li>
+    <li><a href="#ecc-story-section">Story</a></li>
+    <li><a href="#ecc-metrics-section">Metrics</a></li>
+    <li><a href="#ecc-launch-section">Launch</a></li>
+    <li><a href="#ecc-arch-section">Architecture</a></li>
+    <li><a href="#ecc-pub-section">Publications</a></li>
+  </ul>
+  <button id="ecc-hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="ecc-particles" aria-hidden="true" role="presentation"></canvas>
+
+<main id="ecc-main">
+
+<!-- HERO -->
+<section id="ecc-hero">
+  <div id="ecc-hero-badge">Evidence Intelligence Suite</div>
+  <h1>A Systematic Audit<br>of Medical Evidence</h1>
+  <p id="ecc-hero-subtitle">
+    A systematic investigation of 6,229 meta-analyses from 501 Cochrane systematic reviews
+    — audited, mapped, scored, and stress-tested by 9 interconnected analytical engines.
+  </p>
+  <div id="ecc-hero-cycling">48.9% of overlapping meta-analyses show discordant results</div>
+  <div id="ecc-hero-scroll">&#8595;</div>
+</section>
+
+<!-- BIG NUMBERS -->
+<section id="ecc-numbers-section" class="ecc-fade-in">
+  <div id="ecc-numbers">
+    <div class="ecc-number-card">
+      <div class="ecc-number-value" data-target="6229" data-suffix="">0</div>
+      <div class="ecc-number-label">Meta-analyses audited</div>
+    </div>
+    <div class="ecc-number-card">
+      <div class="ecc-number-value" data-target="501" data-suffix="">0</div>
+      <div class="ecc-number-label">Cochrane reviews analyzed</div>
+    </div>
+    <div class="ecc-number-card">
+      <div class="ecc-number-value" data-target="11" data-suffix="">0</div>
+      <div class="ecc-number-label">Quality detectors deployed</div>
+    </div>
+    <div class="ecc-number-card">
+      <div class="ecc-number-value" data-target="48.9" data-suffix="%">0</div>
+      <div class="ecc-number-label">Contradiction rate</div>
+    </div>
+    <div class="ecc-number-card">
+      <div class="ecc-number-value" data-target="1.3" data-suffix="%">0</div>
+      <div class="ecc-number-label">Met all six quality criteria</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="ecc-projects-section" class="ecc-section">
+  <h2 class="ecc-section-title">Project Portfolio</h2>
+  <p class="ecc-section-subtitle">Nine analytical engines, one unified evidence intelligence platform.</p>
+
+  <!-- Tier 1 -->
+  <div class="ecc-tier-label" data-tier="1">Tier 1 — Core Audit</div>
+  <div id="ecc-projects-grid" style="margin-bottom: 3rem;">
+    <div class="ecc-project-card ecc-fade-in" data-tier="1">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="audit">&#9881;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">MetaAudit</div>
+          <div class="ecc-card-tagline">Full-spectrum audit of 6,229 meta-analyses</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="amber">11 detectors &middot; 87/87 tests</div>
+      <div class="ecc-card-finding">
+        Systematic quality issues identified across the Cochrane Library using 11 independent
+        detection algorithms. The foundation dataset that feeds every downstream analysis.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../../MetaAudit/dashboard/index.html">View Dashboard &#8594;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tier 2 -->
+  <div class="ecc-tier-label" data-tier="2">Tier 2 — Moonshot Analytics</div>
+  <div id="ecc-projects-grid-t2" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+
+    <div class="ecc-project-card ecc-fade-in" data-tier="2">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="oracle">&#9733;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">EvidenceOracle</div>
+          <div class="ecc-card-tagline">ML prediction of meta-analysis instability</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="purple">AUC 0.871 (LR) / 0.925 (RF) &middot; 48 features</div>
+      <div class="ecc-card-finding">
+        Logistic regression (AUC 0.871, selected for interpretability) and random forest
+        (AUC 0.925) models trained on 403 reviews identify meta-analyses at risk of instability
+        with future evidence. 48 engineered features from MetaAudit signals; external validation pending.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../EvidenceOracle/dashboard.html">View Dashboard &#8594;</a>
+      </div>
+    </div>
+
+    <div class="ecc-project-card ecc-fade-in" data-tier="2">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="contradict">&#9888;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">ContradictionMap</div>
+          <div class="ecc-card-tagline">Where evidence contradicts itself</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="red">881 pairs &middot; 48.9% contradict</div>
+      <div class="ecc-card-finding">
+        Of 881 overlapping meta-analysis pairs examining shared clinical questions,
+        431 (48.9%) show discordant results (directional reversal, significance discordance,
+        or &gt;2-fold magnitude difference). The majority (375/431) are significance discordances,
+        which may partly reflect differences in statistical power rather than genuine clinical disagreement.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../ContradictionMap/dashboard.html">View Dashboard &#8594;</a>
+      </div>
+    </div>
+
+    <div class="ecc-project-card ecc-fade-in" data-tier="2">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="action">&#10004;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">ActionableEvidence</div>
+          <div class="ecc-card-tagline">Which MAs are ready to change practice</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="green">6,229 scored &middot; 1.3% met all criteria</div>
+      <div class="ecc-card-finding">
+        Scored 6,229 meta-analyses against six pre-specified quality criteria (significance,
+        prediction interval, robustness, audit flags, volume, publication bias).
+        Only 1.3% met all thresholds simultaneously. Many that did not still inform clinical
+        guidelines via GRADE and other appraisal frameworks.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../ActionableEvidence/dashboard.html">View Dashboard &#8594;</a>
+      </div>
+    </div>
+
+    <div class="ecc-project-card ecc-fade-in" data-tier="2">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="atlas">&#9673;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">EvidenceAtlas</div>
+          <div class="ecc-card-tagline">Network visualization of evidence relationships</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="cyan">501 nodes &middot; D3 network</div>
+      <div class="ecc-card-finding">
+        Interactive force-directed network graph revealing how 501 Cochrane reviews
+        interconnect through shared interventions, outcomes, and populations. Evidence forms
+        distinct clusters with critical bridge reviews linking domains.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../EvidenceAtlas/dashboard.html">View Dashboard &#8594;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tier 3 -->
+  <div class="ecc-tier-label" data-tier="3">Tier 3 — Specialized Tools</div>
+  <div id="ecc-projects-grid-t3" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
+
+    <div class="ecc-project-card ecc-fade-in" data-tier="3">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="score">&#9670;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">EvidenceScore</div>
+          <div class="ecc-card-tagline">Composite 0-100 trust score for evidence</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="yellow">Equal weights &middot; sensitivity-tested</div>
+      <div class="ecc-card-finding">
+        An exploratory composite trust metric. Combines audit flags, contradiction signals,
+        robustness metrics, and stability predictions into a 0-100 score using equal-weighted
+        components, validated via Dirichlet sensitivity analysis across 50 weight schemes.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../EvidenceScore/results/dashboard.html">View Dashboard &#8594;</a>
+      </div>
+    </div>
+
+    <div class="ecc-project-card ecc-fade-in" data-tier="3">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="ipd">&#9638;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">IPD Simulator</div>
+          <div class="ecc-card-tagline">Individual patient data reconstruction</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="blue">25/25 tests &middot; Guyot algorithm</div>
+      <div class="ecc-card-finding">
+        Browser-based reconstruction of individual patient data from published Kaplan-Meier curves
+        using the Guyot algorithm. Supports binary, continuous, and time-to-event outcomes
+        with full statistical validation.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../IPDSimulator/index.html">View Tool &#8594;</a>
+      </div>
+    </div>
+
+    <div class="ecc-project-card ecc-fade-in" data-tier="3">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="halflife">&#9201;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">EvidenceHalfLife</div>
+          <div class="ecc-card-tagline">How long evidence stays valid</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="pink">Decay modeling &middot; survival analysis</div>
+      <div class="ecc-card-finding">
+        Applies survival analysis to the evidence lifecycle — modeling how quickly
+        meta-analytic conclusions become outdated as new trials emerge. Quantifies the
+        half-life of medical knowledge.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../EvidenceHalfLife/index.html">View Tool &#8594;</a>
+      </div>
+    </div>
+
+    <div class="ecc-project-card ecc-fade-in" data-tier="3">
+      <div class="ecc-card-header">
+        <div class="ecc-card-icon" data-icon="tribunal">&#9878;</div>
+        <div class="ecc-card-title-area">
+          <div class="ecc-card-name">EvidenceTribunal</div>
+          <div class="ecc-card-tagline">Multi-method evidence adjudication</div>
+        </div>
+      </div>
+      <div class="ecc-card-stat" data-color="pink">Tribunal-style evaluation</div>
+      <div class="ecc-card-finding">
+        When multiple analytical methods disagree, the Tribunal convenes. Applies structured
+        adjudication across frequentist, Bayesian, and sensitivity frameworks to reach a
+        defensible verdict on each evidence question.
+      </div>
+      <div class="ecc-card-footer">
+        <div class="ecc-card-status">
+          <span class="ecc-status-dot" data-status="complete"></span>
+          <span style="color: #34d399;">Complete</span>
+        </div>
+        <a class="ecc-card-btn" href="../EvidenceTribunal/index.html">View Tool &#8594;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE STORY -->
+<section id="ecc-story-section" class="ecc-section" >
+  <h2 class="ecc-section-title">The Story</h2>
+  <p class="ecc-section-subtitle">A five-step journey from audit to intelligence.</p>
+
+  <div class="ecc-story-timeline ecc-fade-in">
+    <div class="ecc-story-step">
+      <h3>Step 1: Audit everything</h3>
+      <p>
+        We started by building MetaAudit — a battery of 11 independent detectors that systematically
+        examined every meta-analysis in 501 Cochrane systematic reviews. Small-study effects,
+        excess significance, heterogeneity outliers, p-hacking signals — 6,229 meta-analyses
+        were put through a full quality audit. The results were sobering: quality issues are
+        pervasive, not exceptional.
+      </p>
+    </div>
+    <div class="ecc-story-step">
+      <h3>Step 2: Find the contradictions</h3>
+      <p>
+        Then we asked the uncomfortable question: do these meta-analyses even agree with each other?
+        ContradictionMap identified 881 pairs of overlapping meta-analyses examining shared clinical
+        questions. 48.9% showed discordant results — defined as directional reversal, significance
+        discordance, or &gt;2-fold magnitude difference. Most discordances (375 of 431) were
+        significance flips, suggesting that differences in precision and power contribute
+        substantially alongside genuine clinical disagreement.
+      </p>
+    </div>
+    <div class="ecc-story-step">
+      <h3>Step 3: Filter for actionability</h3>
+      <p>
+        If evidence contradicts itself nearly half the time, what is actually ready to change clinical
+        practice? ActionableEvidence scored all 6,229 meta-analyses against six pre-specified
+        quality criteria. Only 1.3% met all thresholds simultaneously — though many that did not
+        still contribute to clinical guidelines via GRADE assessment and other appraisal frameworks.
+      </p>
+    </div>
+    <div class="ecc-story-step">
+      <h3>Step 4: Predict instability</h3>
+      <p>
+        EvidenceOracle used 48 features extracted from the MetaAudit dataset to build predictive
+        models identifying meta-analyses at risk of instability. A logistic regression model
+        achieved AUC 0.871 (random forest: 0.925) in 5-fold cross-validation on 403 reviews
+        — promising discrimination, though external validation is needed before operational use.
+      </p>
+    </div>
+    <div class="ecc-story-step">
+      <h3>Step 5: Score everything</h3>
+      <p>
+        Finally, EvidenceScore combines all signals — audit flags, contradiction exposure,
+        actionability metrics, and stability predictions — into a single 0-100 composite trust
+        score for each meta-analysis. One number that captures the full picture. A credit score
+        for evidence.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE METRICS DASHBOARD -->
+<section id="ecc-metrics-section" class="ecc-section">
+  <h2 class="ecc-section-title">Live Metrics</h2>
+  <p class="ecc-section-subtitle">Aggregate findings from 6,229 meta-analyses across all engines.</p>
+
+  <div class="ecc-metrics-grid ecc-fade-in">
+
+    <!-- Panel 1: EvidenceScore Grade Distribution -->
+    <div class="ecc-metric-panel">
+      <div class="ecc-metric-panel-title" data-c="amber">EvidenceScore &mdash; Grade Distribution</div>
+      <div class="ecc-grade-row">
+        <div class="ecc-grade-label" style="color:#34d399;">A+</div>
+        <div class="ecc-grade-bar-bg"><div class="ecc-grade-bar" data-w="3.7" style="width:0;background:#34d399;"></div></div>
+        <div class="ecc-grade-count">71</div>
+      </div>
+      <div class="ecc-grade-row">
+        <div class="ecc-grade-label" style="color:#7eb8ff;">A</div>
+        <div class="ecc-grade-bar-bg"><div class="ecc-grade-bar" data-w="34.8" style="width:0;background:#7eb8ff;"></div></div>
+        <div class="ecc-grade-count">674</div>
+      </div>
+      <div class="ecc-grade-row">
+        <div class="ecc-grade-label" style="color:#c084fc;">B</div>
+        <div class="ecc-grade-bar-bg"><div class="ecc-grade-bar" data-w="69.7" style="width:0;background:#c084fc;"></div></div>
+        <div class="ecc-grade-count">1,349</div>
+      </div>
+      <div class="ecc-grade-row">
+        <div class="ecc-grade-label" style="color:#fbbf24;">C</div>
+        <div class="ecc-grade-bar-bg"><div class="ecc-grade-bar" data-w="100" style="width:0;background:#fbbf24;"></div></div>
+        <div class="ecc-grade-count">1,938</div>
+      </div>
+      <div class="ecc-grade-row">
+        <div class="ecc-grade-label" style="color:#f97316;">D</div>
+        <div class="ecc-grade-bar-bg"><div class="ecc-grade-bar" data-w="99.4" style="width:0;background:#f97316;"></div></div>
+        <div class="ecc-grade-count">1,926</div>
+      </div>
+      <div class="ecc-grade-row">
+        <div class="ecc-grade-label" style="color:#ef4444;">F</div>
+        <div class="ecc-grade-bar-bg"><div class="ecc-grade-bar" data-w="14.0" style="width:0;background:#ef4444;"></div></div>
+        <div class="ecc-grade-count">271</div>
+      </div>
+      <div style="margin-top:1rem; display:flex; justify-content:space-between; font-size:0.78rem; color:#8888a8;">
+        <span>Mean: <b style="color:#fbbf24;">65.5</b></span>
+        <span>Median: <b style="color:#fbbf24;">64</b></span>
+        <span>Range: <b style="color:#fbbf24;">19&ndash;98</b></span>
+      </div>
+    </div>
+
+    <!-- Panel 2: ContradictionMap Breakdown -->
+    <div class="ecc-metric-panel">
+      <div class="ecc-metric-panel-title" data-c="red">ContradictionMap &mdash; Contradiction Types</div>
+      <div class="ecc-donut-wrap">
+        <div class="ecc-donut" style="background: conic-gradient(
+          #ef4444 0deg 12.3deg,
+          #f97316 12.3deg 165.5deg,
+          #fbbf24 165.5deg 176.1deg,
+          #2a2a45 176.1deg 360deg
+        );">
+          <div class="ecc-donut-hole">
+            <div class="ecc-donut-pct">48.9%</div>
+            <div class="ecc-donut-label">contradict</div>
+          </div>
+        </div>
+        <ul class="ecc-donut-legend">
+          <li><span class="ecc-donut-legend-dot" style="background:#ef4444;"></span>Direct reversal <b style="color:#ef4444;">30</b></li>
+          <li><span class="ecc-donut-legend-dot" style="background:#f97316;"></span>Significance flip <b style="color:#f97316;">375</b></li>
+          <li><span class="ecc-donut-legend-dot" style="background:#fbbf24;"></span>Magnitude (&gt;2x) <b style="color:#fbbf24;">26</b></li>
+          <li><span class="ecc-donut-legend-dot" style="background:#2a2a45;border:1px solid #4a4a6a;"></span>No contradiction <b style="color:#8888a8;">450</b></li>
+          <li style="margin-top:0.5rem; color:#8888a8; font-size:0.75rem;">881 overlapping pairs tested</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Panel 3: ActionableEvidence Criteria Failures -->
+    <div class="ecc-metric-panel">
+      <div class="ecc-metric-panel-title" data-c="green">ActionableEvidence &mdash; Why Evidence Fails</div>
+      <p style="font-size:0.8rem; color:#8888a8; margin-bottom:1rem;">
+        Of 6,229 MAs, only <b style="color:#34d399;">78 (1.3%)</b> pass all 6 criteria. Failure rates by criterion:
+      </p>
+      <div class="ecc-criteria-row">
+        <div class="ecc-criteria-name">Significance</div>
+        <div class="ecc-criteria-bar-bg"><div class="ecc-criteria-bar" data-w="85.7" style="width:0;"></div></div>
+        <div class="ecc-criteria-pct">85.7%</div>
+      </div>
+      <div class="ecc-criteria-row">
+        <div class="ecc-criteria-name">Pred. interval</div>
+        <div class="ecc-criteria-bar-bg"><div class="ecc-criteria-bar" data-w="66.1" style="width:0;"></div></div>
+        <div class="ecc-criteria-pct">66.1%</div>
+      </div>
+      <div class="ecc-criteria-row">
+        <div class="ecc-criteria-name">Volume</div>
+        <div class="ecc-criteria-bar-bg"><div class="ecc-criteria-bar" data-w="51.4" style="width:0;"></div></div>
+        <div class="ecc-criteria-pct">51.4%</div>
+      </div>
+      <div class="ecc-criteria-row">
+        <div class="ecc-criteria-name">Robustness</div>
+        <div class="ecc-criteria-bar-bg"><div class="ecc-criteria-bar" data-w="47.4" style="width:0;"></div></div>
+        <div class="ecc-criteria-pct">47.4%</div>
+      </div>
+      <div class="ecc-criteria-row">
+        <div class="ecc-criteria-name">Audit flags</div>
+        <div class="ecc-criteria-bar-bg"><div class="ecc-criteria-bar" data-w="29.5" style="width:0;"></div></div>
+        <div class="ecc-criteria-pct">29.5%</div>
+      </div>
+      <div class="ecc-criteria-row">
+        <div class="ecc-criteria-name">Pub. bias</div>
+        <div class="ecc-criteria-bar-bg"><div class="ecc-criteria-bar" data-w="12.6" style="width:0;"></div></div>
+        <div class="ecc-criteria-pct">12.6%</div>
+      </div>
+    </div>
+
+    <!-- Panel 4: EvidenceOracle Performance -->
+    <div class="ecc-metric-panel">
+      <div class="ecc-metric-panel-title" data-c="purple">EvidenceOracle &mdash; ML Prediction Performance</div>
+      <div class="ecc-oracle-stats">
+        <div class="ecc-oracle-stat">
+          <div class="ecc-oracle-val">0.871</div>
+          <div class="ecc-oracle-lbl">Mean AUC</div>
+        </div>
+        <div class="ecc-oracle-stat">
+          <div class="ecc-oracle-val">80.6%</div>
+          <div class="ecc-oracle-lbl">Accuracy</div>
+        </div>
+        <div class="ecc-oracle-stat">
+          <div class="ecc-oracle-val">48</div>
+          <div class="ecc-oracle-lbl">Features</div>
+        </div>
+        <div class="ecc-oracle-stat">
+          <div class="ecc-oracle-val">403</div>
+          <div class="ecc-oracle-lbl">Reviews</div>
+        </div>
+      </div>
+      <div style="font-size:0.75rem; color:#8888a8; margin-bottom:0.6rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">5-Fold Cross-Validation AUC</div>
+      <div class="ecc-oracle-fold-row">
+        <div class="ecc-oracle-fold-label">Fold 1</div>
+        <div class="ecc-oracle-fold-bar-bg"><div class="ecc-oracle-fold-bar" data-w="81.8" style="width:0;"></div></div>
+        <div class="ecc-oracle-fold-val">0.818</div>
+      </div>
+      <div class="ecc-oracle-fold-row">
+        <div class="ecc-oracle-fold-label">Fold 2</div>
+        <div class="ecc-oracle-fold-bar-bg"><div class="ecc-oracle-fold-bar" data-w="93.0" style="width:0;"></div></div>
+        <div class="ecc-oracle-fold-val">0.930</div>
+      </div>
+      <div class="ecc-oracle-fold-row">
+        <div class="ecc-oracle-fold-label">Fold 3</div>
+        <div class="ecc-oracle-fold-bar-bg"><div class="ecc-oracle-fold-bar" data-w="83.0" style="width:0;"></div></div>
+        <div class="ecc-oracle-fold-val">0.830</div>
+      </div>
+      <div class="ecc-oracle-fold-row">
+        <div class="ecc-oracle-fold-label">Fold 4</div>
+        <div class="ecc-oracle-fold-bar-bg"><div class="ecc-oracle-fold-bar" data-w="90.3" style="width:0;"></div></div>
+        <div class="ecc-oracle-fold-val">0.903</div>
+      </div>
+      <div class="ecc-oracle-fold-row">
+        <div class="ecc-oracle-fold-label">Fold 5</div>
+        <div class="ecc-oracle-fold-bar-bg"><div class="ecc-oracle-fold-bar" data-w="87.5" style="width:0;"></div></div>
+        <div class="ecc-oracle-fold-val">0.875</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK LAUNCH -->
+<section id="ecc-launch-section" class="ecc-section">
+  <h2 class="ecc-section-title">Quick Launch</h2>
+  <p class="ecc-section-subtitle">Open any engine directly.</p>
+
+  <div class="ecc-launch-grid ecc-fade-in">
+    <a class="ecc-launch-btn" href="../../MetaAudit/dashboard/index.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(245,158,11,0.15);color:#f59e0b;">&#9881;</div>
+      <div class="ecc-launch-name">MetaAudit</div>
+      <div class="ecc-launch-desc">11-detector quality audit</div>
+    </a>
+    <a class="ecc-launch-btn" href="../EvidenceOracle/dashboard.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(192,132,252,0.15);color:#c084fc;">&#9733;</div>
+      <div class="ecc-launch-name">EvidenceOracle</div>
+      <div class="ecc-launch-desc">ML instability prediction</div>
+    </a>
+    <a class="ecc-launch-btn" href="../ContradictionMap/dashboard.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(239,68,68,0.15);color:#ef4444;">&#9888;</div>
+      <div class="ecc-launch-name">ContradictionMap</div>
+      <div class="ecc-launch-desc">Evidence conflicts</div>
+    </a>
+    <a class="ecc-launch-btn" href="../ActionableEvidence/dashboard.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(52,211,153,0.15);color:#34d399;">&#10004;</div>
+      <div class="ecc-launch-name">ActionableEvidence</div>
+      <div class="ecc-launch-desc">Clinical readiness filter</div>
+    </a>
+    <a class="ecc-launch-btn" href="../EvidenceAtlas/dashboard.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(6,182,212,0.15);color:#06b6d4;">&#9673;</div>
+      <div class="ecc-launch-name">EvidenceAtlas</div>
+      <div class="ecc-launch-desc">501-node network graph</div>
+    </a>
+    <a class="ecc-launch-btn" href="../EvidenceScore/results/dashboard.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(251,191,36,0.15);color:#fbbf24;">&#9670;</div>
+      <div class="ecc-launch-name">EvidenceScore</div>
+      <div class="ecc-launch-desc">0-100 trust composite</div>
+    </a>
+    <a class="ecc-launch-btn" href="../IPDSimulator/index.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(126,184,255,0.15);color:#7eb8ff;">&#9638;</div>
+      <div class="ecc-launch-name">IPD Simulator</div>
+      <div class="ecc-launch-desc">Guyot KM reconstruction</div>
+    </a>
+    <a class="ecc-launch-btn" href="../EvidenceHalfLife/index.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(168,85,247,0.15);color:#a855f7;">&#9201;</div>
+      <div class="ecc-launch-name">EvidenceHalfLife</div>
+      <div class="ecc-launch-desc">Evidence decay analysis</div>
+    </a>
+    <a class="ecc-launch-btn" href="../EvidenceTribunal/index.html" tabindex="0">
+      <div class="ecc-launch-icon" style="background:rgba(244,114,182,0.15);color:#f472b6;">&#9878;</div>
+      <div class="ecc-launch-name">EvidenceTribunal</div>
+      <div class="ecc-launch-desc">Multi-method adjudication</div>
+    </a>
+  </div>
+</section>
+
+<!-- ARCHITECTURE DIAGRAM -->
+<section id="ecc-arch-section" class="ecc-section">
+  <h2 class="ecc-section-title">Architecture</h2>
+  <p class="ecc-section-subtitle">How the nine engines interconnect.</p>
+
+  <div class="ecc-fade-in">
+    <svg id="ecc-arch-svg" viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture diagram showing data flow: MetaAudit feeds EvidenceOracle, ContradictionMap, ActionableEvidence, and EvidenceAtlas. All Tier 2 engines feed into EvidenceScore. Tier 3 tools (IPD Simulator, HalfLife, EvidenceTribunal) also feed into EvidenceScore.">
+      <title>Evidence Intelligence Suite data flow architecture</title>
+      <!-- Definitions -->
+      <defs>
+        <linearGradient id="ecc-grad-core" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#ef4444;stop-opacity:1"/>
+        </linearGradient>
+        <linearGradient id="ecc-grad-moon" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#7eb8ff;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1"/>
+        </linearGradient>
+        <linearGradient id="ecc-grad-tool" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#34d399;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1"/>
+        </linearGradient>
+        <linearGradient id="ecc-grad-score" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1"/>
+        </linearGradient>
+        <marker id="ecc-arrow" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+          <polygon points="0 0, 10 3.5, 0 7" fill="#4a4a6a"/>
+        </marker>
+        <filter id="ecc-glow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Background grid dots -->
+      <pattern id="ecc-dots" width="30" height="30" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="0.5" fill="#1a1a30"/>
+      </pattern>
+      <rect width="900" height="520" fill="url(#ecc-dots)"/>
+
+      <!-- Connection lines -->
+      <!-- MetaAudit to EvidenceOracle -->
+      <line x1="450" y1="90" x2="220" y2="200" stroke="#4a4a6a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ecc-arrow)"/>
+      <!-- MetaAudit to ContradictionMap -->
+      <line x1="450" y1="90" x2="450" y2="200" stroke="#4a4a6a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ecc-arrow)"/>
+      <!-- MetaAudit to ActionableEvidence -->
+      <line x1="450" y1="90" x2="680" y2="200" stroke="#4a4a6a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ecc-arrow)"/>
+      <!-- MetaAudit to EvidenceAtlas -->
+      <line x1="370" y1="90" x2="110" y2="250" stroke="#4a4a6a" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#ecc-arrow)"/>
+
+      <!-- All Tier 2 to EvidenceScore -->
+      <line x1="220" y1="260" x2="400" y2="380" stroke="#4a4a6a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ecc-arrow)"/>
+      <line x1="450" y1="260" x2="450" y2="380" stroke="#4a4a6a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ecc-arrow)"/>
+      <line x1="680" y1="260" x2="500" y2="380" stroke="#4a4a6a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ecc-arrow)"/>
+      <line x1="110" y1="290" x2="380" y2="380" stroke="#4a4a6a" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#ecc-arrow)"/>
+
+      <!-- Tier 3 tools feed in -->
+      <line x1="160" y1="450" x2="380" y2="420" stroke="#4a4a6a" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#ecc-arrow)"/>
+      <line x1="740" y1="450" x2="520" y2="420" stroke="#4a4a6a" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#ecc-arrow)"/>
+
+      <!-- Tier 1: MetaAudit -->
+      <rect x="360" y="40" width="180" height="55" rx="12" fill="none" stroke="url(#ecc-grad-core)" stroke-width="2" filter="url(#ecc-glow)"/>
+      <text x="450" y="65" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">MetaAudit</text>
+      <text x="450" y="82" text-anchor="middle" fill="#8888a8" font-size="10">6,229 MAs &middot; 11 detectors</text>
+
+      <!-- Tier 2: Moonshots -->
+      <rect x="130" y="210" width="180" height="55" rx="12" fill="none" stroke="url(#ecc-grad-moon)" stroke-width="2"/>
+      <text x="220" y="235" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">EvidenceOracle</text>
+      <text x="220" y="252" text-anchor="middle" fill="#8888a8" font-size="10">AUC 0.871 &middot; ML</text>
+
+      <rect x="360" y="210" width="180" height="55" rx="12" fill="none" stroke="url(#ecc-grad-moon)" stroke-width="2"/>
+      <text x="450" y="235" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">ContradictionMap</text>
+      <text x="450" y="252" text-anchor="middle" fill="#8888a8" font-size="10">48.9% contradict</text>
+
+      <rect x="590" y="210" width="180" height="55" rx="12" fill="none" stroke="url(#ecc-grad-moon)" stroke-width="2"/>
+      <text x="680" y="235" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="600">ActionableEvidence</text>
+      <text x="680" y="252" text-anchor="middle" fill="#8888a8" font-size="10">1.3% actionable</text>
+
+      <rect x="20" y="250" width="180" height="45" rx="12" fill="none" stroke="url(#ecc-grad-moon)" stroke-width="1.5"/>
+      <text x="110" y="275" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="600">EvidenceAtlas</text>
+      <text x="110" y="288" text-anchor="middle" fill="#8888a8" font-size="9">501-node network</text>
+
+      <!-- Convergence: EvidenceScore -->
+      <rect x="350" y="370" width="200" height="60" rx="14" fill="none" stroke="url(#ecc-grad-score)" stroke-width="2.5" filter="url(#ecc-glow)"/>
+      <text x="450" y="397" text-anchor="middle" fill="#fbbf24" font-size="15" font-weight="700">EvidenceScore</text>
+      <text x="450" y="416" text-anchor="middle" fill="#8888a8" font-size="10">Composite 0-100 trust score</text>
+
+      <!-- Tier 3: Side tools -->
+      <rect x="60" y="440" width="170" height="42" rx="10" fill="none" stroke="url(#ecc-grad-tool)" stroke-width="1.5"/>
+      <text x="145" y="465" text-anchor="middle" fill="#34d399" font-size="11" font-weight="600">IPD Simulator / HalfLife</text>
+
+      <rect x="650" y="440" width="170" height="42" rx="10" fill="none" stroke="url(#ecc-grad-tool)" stroke-width="1.5"/>
+      <text x="735" y="465" text-anchor="middle" fill="#34d399" font-size="11" font-weight="600">EvidenceTribunal</text>
+
+      <!-- Labels -->
+      <text x="450" y="25" text-anchor="middle" fill="#4a4a6a" font-size="10" text-transform="uppercase" letter-spacing="0.15em">DATA FLOW</text>
+      <text x="840" y="75" text-anchor="end" fill="#f59e0b" font-size="9" font-weight="600">TIER 1</text>
+      <text x="840" y="240" text-anchor="end" fill="#c084fc" font-size="9" font-weight="600">TIER 2</text>
+      <text x="840" y="460" text-anchor="end" fill="#34d399" font-size="9" font-weight="600">TIER 3</text>
+    </svg>
+  </div>
+</section>
+
+<!-- PUBLICATIONS -->
+<section id="ecc-pub-section" class="ecc-section">
+  <h2 class="ecc-section-title">Publications</h2>
+  <p class="ecc-section-subtitle">Target journals and manuscript status for each project.</p>
+
+  <div class="ecc-fade-in" style="overflow-x: auto;">
+    <table id="ecc-pub-table">
+      <caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Publication status for each Evidence Intelligence Suite project</caption>
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Target Journal</th>
+          <th>Manuscript Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">MetaAudit</td>
+          <td>BMJ</td>
+          <td>Research Article</td>
+          <td><span class="ecc-pub-status" data-s="writing">Writing</span></td>
+        </tr>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">EvidenceOracle</td>
+          <td>Nature Medicine</td>
+          <td>Brief Communication</td>
+          <td><span class="ecc-pub-status" data-s="draft">Draft</span></td>
+        </tr>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">ContradictionMap</td>
+          <td>BMJ</td>
+          <td>Research Article</td>
+          <td><span class="ecc-pub-status" data-s="draft">Draft</span></td>
+        </tr>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">ActionableEvidence</td>
+          <td>BMJ EBM</td>
+          <td>Original Research</td>
+          <td><span class="ecc-pub-status" data-s="draft">Draft</span></td>
+        </tr>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">EvidenceAtlas</td>
+          <td>JAMA Network Open</td>
+          <td>Research Letter</td>
+          <td><span class="ecc-pub-status" data-s="draft">Draft</span></td>
+        </tr>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">EvidenceScore</td>
+          <td>The Lancet Digital Health</td>
+          <td>Original Research</td>
+          <td><span class="ecc-pub-status" data-s="planned">Planned</span></td>
+        </tr>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">IPD Simulator</td>
+          <td>Statistics in Medicine</td>
+          <td>Software Article</td>
+          <td><span class="ecc-pub-status" data-s="draft">Draft</span></td>
+        </tr>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">EvidenceHalfLife</td>
+          <td>BMJ EBM</td>
+          <td>Research Article</td>
+          <td><span class="ecc-pub-status" data-s="draft">Draft</span></td>
+        </tr>
+        <tr>
+          <td style="color: #ffffff; font-weight: 600;">EvidenceTribunal</td>
+          <td>Research Synthesis Methods</td>
+          <td>Methodology</td>
+          <td><span class="ecc-pub-status" data-s="draft">Draft</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="ecc-footer">
+  <p>Built with <span>Claude Code</span> &middot; Evidence Intelligence Suite 2026</p>
+  <p style="margin-top: 0.5rem;">501 Cochrane reviews &middot; 6,229 meta-analyses &middot; 9 analytical engines</p>
+</footer>
+
+<script>
+// ==================== REDUCED MOTION CHECK ====================
+var eccReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ==================== PARTICLE ANIMATION ====================
+(function() {
+  if (eccReducedMotion) return;
+  var canvas = document.getElementById('ecc-particles');
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var PARTICLE_COUNT = 60;
+  var animId;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Seeded pseudo-random (xoshiro128** style, but simplified for init only)
+  // Use time-based seed for visual variety, not reproducible data
+  var seed = Date.now() % 100000;
+  function seededRandom() {
+    seed = (seed * 16807 + 0) % 2147483647;
+    return (seed & 0x7fffffff) / 0x7fffffff;
+  }
+
+  for (var i = 0; i < PARTICLE_COUNT; i++) {
+    particles.push({
+      x: seededRandom() * canvas.width,
+      y: seededRandom() * canvas.height,
+      vx: (seededRandom() - 0.5) * 0.3,
+      vy: (seededRandom() - 0.5) * 0.3,
+      r: seededRandom() * 2 + 0.5,
+      alpha: seededRandom() * 0.3 + 0.05
+    });
+  }
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(126, 184, 255, ' + p.alpha + ')';
+      ctx.fill();
+    }
+
+    // Draw lines between nearby particles
+    for (var i = 0; i < particles.length; i++) {
+      for (var j = i + 1; j < particles.length; j++) {
+        var dx = particles[i].x - particles[j].x;
+        var dy = particles[i].y - particles[j].y;
+        var dist = dx * dx + dy * dy;
+        if (dist < 25000) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(126, 184, 255, ' + (0.04 * (1 - dist / 25000)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    animId = requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+
+  // Pause particles when tab not visible
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      cancelAnimationFrame(animId);
+    } else {
+      drawParticles();
+    }
+  });
+})();
+
+// ==================== CYCLING HEADLINES ====================
+(function() {
+  if (eccReducedMotion) return;
+  var headlines = [
+    '48.9% of overlapping meta-analyses show discordant results',
+    'Only 1.3% of evidence met all six pre-specified quality criteria',
+    'AUC 0.871 — predictive signals for evidence instability identified',
+    '6,229 meta-analyses audited with 11 independent detectors',
+    '501 Cochrane reviews mapped into a single evidence network',
+    'An exploratory 0-100 composite trust metric for evidence'
+  ];
+  var idx = 0;
+  var el = document.getElementById('ecc-hero-cycling');
+
+  setInterval(function() {
+    el.classList.add('ecc-fade');
+    setTimeout(function() {
+      idx = (idx + 1) % headlines.length;
+      el.textContent = headlines[idx];
+      el.classList.remove('ecc-fade');
+    }, 500);
+  }, 4000);
+})();
+
+// ==================== ANIMATED COUNTERS ====================
+(function() {
+  var counters = document.querySelectorAll('.ecc-number-value');
+  if (eccReducedMotion) {
+    counters.forEach(function(el) {
+      var target = parseFloat(el.getAttribute('data-target'));
+      var suffix = el.getAttribute('data-suffix') || '';
+      el.textContent = (target % 1 !== 0 ? target.toFixed(1) : target.toLocaleString()) + suffix;
+    });
+    return;
+  }
+  var observed = false;
+
+  function animateCounter(el) {
+    var target = parseFloat(el.getAttribute('data-target'));
+    var suffix = el.getAttribute('data-suffix') || '';
+    var isFloat = target % 1 !== 0;
+    var duration = 2000;
+    var startTime = null;
+
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      var progress = (timestamp - startTime) / duration;
+      if (progress > 1) progress = 1;
+
+      // Ease out quad
+      var eased = 1 - (1 - progress) * (1 - progress);
+      var current = eased * target;
+
+      if (isFloat) {
+        el.textContent = current.toFixed(1) + suffix;
+      } else {
+        el.textContent = Math.floor(current).toLocaleString() + suffix;
+      }
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        if (isFloat) {
+          el.textContent = target.toFixed(1) + suffix;
+        } else {
+          el.textContent = target.toLocaleString() + suffix;
+        }
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !observed) {
+        observed = true;
+        counters.forEach(function(c) { animateCounter(c); });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  var section = document.getElementById('ecc-numbers-section');
+  if (section) observer.observe(section);
+})();
+
+// ==================== SCROLL FADE-IN ====================
+(function() {
+  var fadeEls = document.querySelectorAll('.ecc-fade-in');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('ecc-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  fadeEls.forEach(function(el) { observer.observe(el); });
+})();
+
+// ==================== HAMBURGER MENU ====================
+(function() {
+  var btn = document.getElementById('ecc-hamburger');
+  var links = document.getElementById('ecc-nav-links');
+  if (!btn || !links) return;
+
+  btn.addEventListener('click', function() {
+    var open = btn.classList.toggle('ecc-open');
+    links.classList.toggle('ecc-open');
+    btn.setAttribute('aria-expanded', String(open));
+  });
+
+  function closeMenu() {
+    btn.classList.remove('ecc-open');
+    links.classList.remove('ecc-open');
+    btn.setAttribute('aria-expanded', 'false');
+  }
+
+  // Close on link click (mobile)
+  links.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', closeMenu);
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && btn.classList.contains('ecc-open')) {
+      closeMenu();
+      btn.focus();
+    }
+  });
+})();
+
+// ==================== ANIMATED METRIC BARS ====================
+(function() {
+  function animateBars(container) {
+    container.querySelectorAll('[data-w]').forEach(function(bar) {
+      bar.style.width = bar.getAttribute('data-w') + '%';
+    });
+  }
+
+  var metricsSection = document.getElementById('ecc-metrics-section');
+  if (!metricsSection) return;
+
+  var observed = false;
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && !observed) {
+        observed = true;
+        animateBars(metricsSection);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  observer.observe(metricsSection);
+})();
+
+// ==================== SMOOTH NAV HIGHLIGHT ====================
+(function() {
+  var links = document.querySelectorAll('#ecc-nav-links a');
+  var sections = [];
+  links.forEach(function(link) {
+    var href = link.getAttribute('href');
+    if (href && href.charAt(0) === '#') {
+      var target = document.getElementById(href.slice(1));
+      if (target) sections.push({ link: link, section: target });
+    }
+  });
+
+  var scrollTicking = false;
+  window.addEventListener('scroll', function() {
+    if (!scrollTicking) {
+      requestAnimationFrame(function() {
+        var scrollY = window.scrollY + 100;
+        var current = null;
+        sections.forEach(function(s) {
+          if (s.section.offsetTop <= scrollY) current = s;
+        });
+        links.forEach(function(l) { l.style.color = ''; });
+        if (current) current.link.style.color = '#7eb8ff';
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  });
+})();
+</script>
+</body>
+</html>
